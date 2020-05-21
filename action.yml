@@ -1,0 +1,5 @@
+name: 'Release Labeler'
+description: 'Auto-label pull requests and issues with the current release label.'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
