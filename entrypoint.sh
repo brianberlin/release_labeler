@@ -1,72 +1,57 @@
 #!/bin/sh -l
 
-echo "$GITHUB_EVENT_NAME"
-echo "INPUT_WHO: $INPUT_WHO"
-echo "HOME: $HOME"
-echo "GITHUB_JOB: $GITHUB_JOB"
-echo "GITHUB_REF: $GITHUB_REF"
-echo "GITHUB_SHA: $GITHUB_SHA"
-echo "GITHUB_REPOSITORY: $GITHUB_REPOSITORY"
-echo "GITHUB_REPOSITORY_OWNER: $GITHUB_REPOSITORY_OWNER"
-echo "GITHUB_RUN_ID: $GITHUB_RUN_ID"
-echo "GITHUB_RUN_NUMBER: $GITHUB_RUN_NUMBER"
-echo "GITHUB_ACTOR: $GITHUB_ACTOR"
-echo "GITHUB_WORKFLOW: $GITHUB_WORKFLOW"
-echo "GITHUB_HEAD_REF: $GITHUB_HEAD_REF"
-echo "GITHUB_BASE_REF: $GITHUB_BASE_REF"
-echo "GITHUB_EVENT_NAME: $GITHUB_EVENT_NAME"
-echo "GITHUB_URL: $GITHUB_URL"
-echo "GITHUB_API_URL: $GITHUB_API_URL"
-echo "GITHUB_GRAPHQL_URL: $GITHUB_GRAPHQL_URL"
-echo "GITHUB_WORKSPACE: $GITHUB_WORKSPACE"
-echo "GITHUB_ACTION: $GITHUB_ACTION"
-echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
-echo "RUNNER_OS: $RUNNER_OS"
-echo "RUNNER_TOOL_CACHE: $RUNNER_TOOL_CACHE"
-echo "RUNNER_TEMP: $RUNNER_TEMP"
-echo "RUNNER_WORKSPACE: $RUNNER_WORKSPACE"
-echo "ACTIONS_RUNTIME_URL: $ACTIONS_RUNTIME_URL"
-echo "ACTIONS_RUNTIME_TOKEN: $ACTIONS_RUNTIME_TOKEN"
-echo "ACTIONS_CACHE_URL: $ACTIONS_CACHE_URL"
-echo "GITHUB_ACTIONS: $GITHUB_ACTIONS"
-echo "CI: $CI"
+if [[ -z "$GITHUB_TOKEN" ]]; then
+  echo "Set the GITHUB_TOKEN env variable."
+  exit 1
+fi
 
-# /usr/bin/docker run 
-# --name be76dbe975b94370fb40b0a892920e3010be57_95bbe2 
-# --label be76db 
-# --workdir /github/workspace 
-# --rm 
-# -e GITHUB_TOKEN 
-# -e INPUT_WHO-TO-GREET 
-# -e HOME 
-# -e GITHUB_JOB 
-# -e GITHUB_REF 
-# -e GITHUB_SHA 
-# -e GITHUB_REPOSITORY 
-# -e GITHUB_REPOSITORY_OWNER 
-# -e GITHUB_RUN_ID 
-# -e GITHUB_RUN_NUMBER 
-# -e GITHUB_ACTOR 
-# -e GITHUB_WORKFLOW 
-# -e GITHUB_HEAD_REF 
-# -e GITHUB_BASE_REF 
-# -e GITHUB_EVENT_NAME 
-# -e GITHUB_URL 
-# -e GITHUB_API_URL 
-# -e GITHUB_GRAPHQL_URL 
-# -e GITHUB_WORKSPACE 
-# -e GITHUB_ACTION 
-# -e GITHUB_EVENT_PATH 
-# -e RUNNER_OS 
-# -e RUNNER_TOOL_CACHE 
-# -e RUNNER_TEMP 
-# -e RUNNER_WORKSPACE 
-# -e ACTIONS_RUNTIME_URL 
-# -e ACTIONS_RUNTIME_TOKEN 
-# -e ACTIONS_CACHE_URL 
-# -e GITHUB_ACTIONS=true 
-# -e CI=true 
-# -v "/var/run/docker.sock":"/var/run/docker.sock" 
-# -v "/home/runner/work/_temp/_github_home":"/github/home" 
-# -v "/home/runner/work/_temp/_github_workflow":"/github/workflow" 
-# -v "/home/runner/work/test/test":"/github/workspace" be76db:e975b94370fb40b0a892920e3010be57  "World"
+if [[ -z "$GITHUB_REPOSITORY" ]]; then
+  echo "Set the GITHUB_REPOSITORY env variable."
+  exit 1
+fi
+
+if [[ -z "$GITHUB_EVENT_PATH" ]]; then
+  echo "Set the GITHUB_EVENT_PATH env variable."
+  exit 1
+fi
+
+URI="https://api.github.com"
+API_HEADER="Accept: application/vnd.github.v3+json"
+AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
+
+# action=$(jq --raw-output .action "$GITHUB_EVENT_PATH")
+# state=$(jq --raw-output .review.state "$GITHUB_EVENT_PATH")
+# number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+
+body=$(curl -sSL -H "${AUTH_HEADER}" -H "${API_HEADER}" "${URI}${GITHUB_EVENT_PATH}")
+
+echo "$body"
+
+# HOME: /github/home
+# GITHUB_JOB: releaseLabeler
+# GITHUB_REF: refs/pull/8/merge
+# GITHUB_SHA: e91bb735c3094240a19e72b5b0f16cd8f3afc266
+# GITHUB_REPOSITORY: brianberlin/test
+# GITHUB_REPOSITORY_OWNER: brianberlin
+# GITHUB_RUN_ID: 111683330
+# GITHUB_RUN_NUMBER: 5
+# GITHUB_ACTOR: brianberlin
+# GITHUB_WORKFLOW: Labeler
+# GITHUB_HEAD_REF: brianberlin-patch-5
+# GITHUB_BASE_REF: develop
+# GITHUB_EVENT_NAME: pull_request
+# GITHUB_URL: https://github.com
+# GITHUB_API_URL: https://api.github.com
+# GITHUB_GRAPHQL_URL: https://api.github.com/graphql
+# GITHUB_WORKSPACE: /github/workspace
+# GITHUB_ACTION: brianberlinrelease_labeler
+# GITHUB_EVENT_PATH: /github/workflow/event.json
+# RUNNER_OS: Linux
+# RUNNER_TOOL_CACHE: /opt/hostedtoolcache
+# RUNNER_TEMP: /home/runner/work/_temp
+# RUNNER_WORKSPACE: /home/runner/work/test
+# ACTIONS_RUNTIME_URL: https://pipelines.actions.githubusercontent.com/YHn2suXFazhSXglkbf75IPV6sYAzKUid1p42KJSK19gzcEA893/
+# ACTIONS_RUNTIME_TOKEN: ***
+# ACTIONS_CACHE_URL: https://artifactcache.actions.githubusercontent.com/YHn2suXFazhSXglkbf75IPV6sYAzKUid1p42KJSK19gzcEA893/
+# GITHUB_ACTIONS: true
+# CI: true
