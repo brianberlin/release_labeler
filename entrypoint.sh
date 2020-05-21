@@ -19,11 +19,7 @@ URI="https://api.github.com"
 API_HEADER="Accept: application/vnd.github.v3+json"
 AUTH_HEADER="Authorization: token ${GITHUB_TOKEN}"
 
-# action=$(jq --raw-output .action "$GITHUB_EVENT_PATH")
-# state=$(jq --raw-output .review.state "$GITHUB_EVENT_PATH")
-# number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-
-body=$(curl -sSL -H "${AUTH_HEADER}" -H "${API_HEADER}" "${URI}${GITHUB_EVENT_PATH}")
+body=$(curl -sSL -H "${AUTH_HEADER}" -H "${API_HEADER}" "${URI}/repos/${GITHUB_REPOSITORY}/pulls/${number}")
 
 echo "$body"
 
